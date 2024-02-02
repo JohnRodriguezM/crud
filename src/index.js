@@ -4,6 +4,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 
 import { connectDb } from "./connectDb.js";
+import { handleError } from "./middlewares/handleError.js";
 
 const app = express();
 dotenv.config();
@@ -22,17 +23,19 @@ app.get("/", async (req, res, next) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({ error: err.message });
-});
+app.use(handleError);
 
 async function main() {
-  await connectDb();
-  // Start the server after the database connection is established
-  app.listen(process.env.PORT || 4000, () => {
-    console.log(`Server is running on port ${process.env.PORT || 4000}`);
-  });
+  try {
+    await connectDb();
+    const port = process.env.PORT || 4000;
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  } catch (err) {
+    console.error('Failed to start the application:', err);
+    process.exit(1);
+  }
 }
 
-main().catch(console.error);
+main();
