@@ -2,16 +2,24 @@ import { validationResult } from "express-validator";
 import { ProductsService } from "../services/products.service.js";
 import { productValidationRules } from "./validations/products.validations.js";
 
+const products = new ProductsService();
+
+const handleValidationErrors = (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: "Error de validación",
+      detail: errors.array()[0].msg,
+    });
+  }
+  return null;
+};
+
 const getAllProducts = async (req, res, next) => {
   try {
-    const products = new ProductsService();
     const allProducts = await products.getAllProducts();
 
-    // ? It allows me to return an error and simulate a 500 status code, to show to user the error message in a good way
-    /*if (Array.isArray(allProducts) && allProducts.length === 0) {
-     throw new Error("No se han encontrado productos");
-    }
-*/
     if (Array.isArray(allProducts) && allProducts.length === 0) {
       return res.status(200).json({
         success: false,
@@ -33,17 +41,10 @@ const getAllProducts = async (req, res, next) => {
 const createProduct = [
   ...productValidationRules,
   async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: "No se ha podido crear el producto, (error de validación)",
-        detail: errors.array()[0].msg,
-      });
-    }
+    const errorResponse = handleValidationErrors(req, res);
+    if (errorResponse) return errorResponse;
 
     try {
-      const products = new ProductsService();
       const newProduct = await products.createProduct(req.body, next);
 
       res.status(201).json({
@@ -60,14 +61,8 @@ const createProduct = [
 const editProduct = [
   ...productValidationRules,
   async (req, res, next) => {
-    if (!validationResult(req).isEmpty()) {
-      return res.status(400).json({
-        succes: false,
-        message:
-          "No se ha podido actualizar el producto, (error de validación)",
-        detail: validationResult(req).array()[0].msg,
-      });
-    }
+    const errorResponse = handleValidationErrors(req, res);
+    if (errorResponse) return errorResponse;
 
     try {
       const updatedProduct = await products.updateProduct(
@@ -87,10 +82,7 @@ const editProduct = [
 ];
 
 export {
-  // list as getAllProducts,
   getAllProducts,
-  // create as createProduct,
   createProduct,
-  // update as editProduct,
   editProduct,
 };

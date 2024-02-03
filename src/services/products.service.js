@@ -36,7 +36,7 @@ class ProductsService {
     const existingProduct = await Product.findOne({ name: productData.name });
 
     if (existingProduct) {
-      throw new Error(`Product with name ${productData.name} already exists`);
+      throw new Error(`Product with name (${productData.name}) already exists`);
     }
 
     try {
