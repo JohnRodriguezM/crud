@@ -28,16 +28,21 @@ class ProductsService {
     }
   }
 
-  async createProduct(productData, next) {
-    if (!productData) {
-      throw new Error("Product data is required");
+  async createProduct(productData) {
+    if (!productData || !productData.name) {
+      throw new Error("Product data with a name is required");
+    }
+
+    const existingProduct = await Product.findOne({ name: productData.name });
+
+    if (existingProduct) {
+      throw new Error(`Product with name ${productData.name} already exists`);
     }
 
     try {
-      const newProduct = await Product.create(productData);
-      return newProduct;
+      return await Product.create(productData);
     } catch (error) {
-      next(error);
+      throw new Error("Failed to create product");
     }
   }
 
@@ -48,6 +53,24 @@ class ProductsService {
         new: true,
       });
       return updatedProduct;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteProduct(id, next) {
+    if (!id) {
+      throw new Error("Product id is required");
+    }
+
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(id);
+      if (!deletedProduct) {
+        throw new Error(
+          "Product not found, please check the product exists and try again."
+        );
+      }
+      return deletedProduct;
     } catch (error) {
       next(error);
     }
