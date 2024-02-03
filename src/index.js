@@ -6,6 +6,9 @@ import dotenv from "dotenv";
 import { connectDb } from "./connectDb.js";
 import { handleError } from "./middlewares/handleError.js";
 
+// ? import routes
+import { productRouter } from "./routes/product.routes.js";
+
 const app = express();
 dotenv.config();
 app.use(express.json());
@@ -14,13 +17,8 @@ app.use(express.static("public"));
 app.use(cors());
 app.use(morgan("dev"));
 
-app.get("/", async (req, res, next) => {
-  try {
-    res.send("Hello world!");
-  } catch (error) {
-    next(error);
-  }
-});
+// ? use routes
+app.use("/api/products", productRouter);
 
 // Error handling middleware
 app.use(handleError);
@@ -33,7 +31,7 @@ async function main() {
       console.log(`Server is running on port ${port}`);
     });
   } catch (err) {
-    console.error('Failed to start the application:', err);
+    console.error("Failed to start the application:", err);
     process.exit(1);
   }
 }

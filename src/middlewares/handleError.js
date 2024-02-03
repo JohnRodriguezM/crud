@@ -4,19 +4,23 @@ const handleError = (err, req, res, next) => {
 
   const response = {
     status: "error",
+    success: false,
     message: err.message || "Internal Server Error, please try again.",
-    data: null,
-    errorName: err.name || null,
-    parameters: req.params || null,
+    errorName: err.name || "Error, please try again",
+    parameters: req.params || "No parameters",
   };
+
+  if (err.name === "ValidationError") {
+    response.message =
+      "Invalid input data. Please verify your data and try again.";
+  }
 
   if (process.env.NODE_ENV === "development") {
     response.stack = err.stack;
+    response.errorDetails = err;
   }
 
   res.status(statusCode).json(response);
 };
 
-export {
-  handleError,
-}
+export { handleError };
