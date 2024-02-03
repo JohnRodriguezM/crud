@@ -22,4 +22,20 @@ const productValidationRules = [
   check("image").optional().isString().withMessage("Image must be a string"),
 ];
 
-export default productValidationRules;
+const productUpdateValidationRules = [
+  check("name").optional().isString().withMessage("Name must be a string"),
+
+  check("quantity")
+    .optional()
+    .isInt({ gt: 0 })
+    .withMessage("Quantity must be a positive integer"),
+
+  check("price")
+    .optional()
+    .isInt({ gt: 0 })
+    .withMessage("Price must be a positive integer"),
+
+  check("image").optional().isString().withMessage("Image must be a string"),
+];
+
+export { productValidationRules, productUpdateValidationRules };

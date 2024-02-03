@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import { ProductsService } from "../services/products.service.js";
-import productValidationRules from "./validations/products.validations.js";
+import { productValidationRules } from "./validations/products.validations.js";
 
 const getAllProducts = async (req, res, next) => {
   try {
@@ -29,6 +29,7 @@ const getAllProducts = async (req, res, next) => {
     next(err);
   }
 };
+
 const createProduct = [
   ...productValidationRules,
   async (req, res, next) => {
@@ -36,7 +37,7 @@ const createProduct = [
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: "Validation errors occurred",
+        message: "No se ha podido crear el producto, (error de validación)",
         detail: errors.array()[0].msg,
       });
     }
@@ -56,9 +57,40 @@ const createProduct = [
   },
 ];
 
+const editProduct = [
+  ...productValidationRules,
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty()) {
+      return res.status(400).json({
+        succes: false,
+        message:
+          "No se ha podido actualizar el producto, (error de validación)",
+        detail: validationResult(req).array()[0].msg,
+      });
+    }
+
+    try {
+      const updatedProduct = await products.updateProduct(
+        req.params.id,
+        req.body,
+        next
+      );
+      res.status(200).json({
+        success: true,
+        message: "El producto ha sido actualizado exitosamente",
+        data: updatedProduct,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+];
+
 export {
   // list as getAllProducts,
   getAllProducts,
   // create as createProduct,
   createProduct,
+  // update as editProduct,
+  editProduct,
 };
