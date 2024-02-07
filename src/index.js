@@ -9,6 +9,7 @@ import handleError from './middlewares/handleError.js';
 // ? import routes
 import productRouter from './routes/products/product.routes.js';
 import userSignUpRoutes from './routes/users/signup/signup.routes.js';
+import userSignInRoutes from './routes/users/signin/signin.routes.js';
 import authMiddleware from './middlewares/handleAuth.js';
 import validate from './middlewares/validatorInput.js';
 import userValidationRules from './controllers/users/validations/user.validations.js';
@@ -25,6 +26,7 @@ app.use(morgan('dev'));
 // ! route, validations constant, middleware, controller routes
 /* puede funcionar en caso de que se necesite validar el input
 en todos los endpoints de la ruta, en caso contrario, se puede hacer la validación en el controlador */
+app.use('/api/auth/login', userValidationRules, validate, userSignInRoutes);
 app.use('/api/auth', userValidationRules, validate, userSignUpRoutes);
 // ? prducts routes
 app.use('/api/products', authMiddleware, productRouter);

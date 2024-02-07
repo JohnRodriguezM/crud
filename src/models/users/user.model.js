@@ -10,10 +10,6 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, 'Password is required, please provide it'],
-      match: [
-        /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-        'Password must have at least 8 characters and contain at least one letter and one number',
-      ],
     },
   },
   { timestamps: true },

@@ -1,5 +1,5 @@
 import { validationResult } from 'express-validator';
-import { productUpdateValidationRules, productValidationRules } from '../validators/products.validations.js';
+import { productValidationRules, productUpdateValidationRules } from './validators/products.validations.js';
 import products from '../../services/products/products.service.js';
 
 const handleValidationErrors = (req, res) => {
