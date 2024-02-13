@@ -10,11 +10,18 @@ const signInUser = async (req, res, next) => {
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: '1h',
       });
-      res.status(200).json({
-        success: true,
-        message: 'User logged successfully',
-        data: user,
-        token,
+
+      if (token) {
+        res.status(200).json({
+          success: true,
+          message: 'User logged successfully',
+          data: user,
+          token,
+        });
+      }
+      res.status(401).json({
+        success: false,
+        message: 'User could not be logged',
       });
     }
     // send email confirmation to user

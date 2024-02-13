@@ -9,6 +9,12 @@ const signUpUser = async (req, res, next) => {
       const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
         expiresIn: '1h',
       });
+      if (!token) {
+        res.status(401).json({
+          success: false,
+          message: 'User could not be logged',
+        });
+      }
       res.status(201).json({
         success: true,
         message: 'User created successfully',
